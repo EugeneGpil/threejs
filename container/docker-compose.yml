@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+
+  nodejs:
+    build:
+      context: nodejs
+      args:
+        - ID_GROUP=${ID_GROUP}
+        - ID_USER=${ID_USER}
+    working_dir: /usr/share/nginx/front
+    volumes:
+      - ../front:/usr/share/nginx/front
+    environment:
+      - HOST=0.0.0.0
+    command: tail -F anything
+    user: "${ID_USER}:${ID_GROUP}"
+    ports:
+      - "9000:9000" # for vite dev websocket
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: nginx
+    working_dir: /usr/share/nginx/front
+    volumes:
+      - ../front:/usr/share/nginx/front
+    restart: unless-stopped
+    ports:
+      - ${PORT_NGINX}:80
