@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls";
+import * as dat from "dat.gui";
 
 export default (container) => {
   const renderer = new THREE.WebGLRenderer();
@@ -25,7 +26,7 @@ export default (container) => {
   // camera.position.z = 5;
   // camera.position.y = 2;
   // camera.position.x = 2;
-  camera.position.set(-10, 30, 30);
+  camera.position.set(-3, 10, 10);
   orbit.update();
 
   const boxGeometry = new THREE.BoxGeometry();
@@ -44,6 +45,39 @@ export default (container) => {
 
   const gridHelper = new THREE.GridHelper(30 /*100*/);
   scene.add(gridHelper);
+
+  const sphereGeometry = new THREE.SphereGeometry(4, 16, 8);
+  const sphereMaterial = new THREE.MeshBasicMaterial({
+    color: 0x0000ff,
+    wireframe: false,
+  });
+  // const sphereMaterial = new THREE.MeshStandardMaterial({
+  //   color: 0x0000FF,
+  //   wireframe: false,
+  // })
+  // const sphereMaterial = new THREE.MeshLambertMaterial({
+  //   color: 0x0000FF,
+  //   wireframe: false,
+  // })
+  const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+  scene.add(sphere);
+
+  sphere.position.x = -5;
+
+  const gui = new dat.GUI();
+
+  const options = {
+    sphereColor: "#ffee00",
+    wireframe: false,
+  };
+
+  gui.addColor(options, "sphereColor").onChange((e) => {
+    sphere.material.color.set(e);
+  });
+
+  gui.add(options, "wireframe").onChange((e) => {
+    sphere.material.wireframe = e;
+  });
 
   renderer.setAnimationLoop((time) => {
     box.rotation.x = time / 2400;
