@@ -102,9 +102,44 @@ export default (container) => {
 
   // renderer.setClearColor(0xFFEA00);
 
+  const backgroundImage = 'img/background.jpeg';
+
+
+  const cubeTextureLoader = new THREE.CubeTextureLoader();
+  scene.background = cubeTextureLoader.load([
+    backgroundImage,
+    backgroundImage,
+    backgroundImage,
+    backgroundImage,
+    backgroundImage,
+    backgroundImage,
+  ])
+
+
   const textureLoader = new THREE.TextureLoader();
 
-  scene.background = textureLoader.load('img/background.jpeg')
+  const box2Geometry = new THREE.BoxGeometry(4, 4, 4)
+  const box2Material = new THREE.MeshBasicMaterial({
+    // color: 0x00FF00,
+    // map: textureLoader.load(backgroundImage)
+  })
+
+  const box2MultiMaterial = [
+    new THREE.MeshBasicMaterial({map: textureLoader.load(backgroundImage)}),
+    new THREE.MeshBasicMaterial({map: textureLoader.load(backgroundImage)}),
+    new THREE.MeshBasicMaterial({map: textureLoader.load(backgroundImage)}),
+    new THREE.MeshBasicMaterial({map: textureLoader.load(backgroundImage)}),
+    new THREE.MeshBasicMaterial({map: textureLoader.load(backgroundImage)}),
+    new THREE.MeshBasicMaterial({map: textureLoader.load(backgroundImage)}),
+  ];
+
+  // const box2 = new THREE.Mesh(box2Geometry, box2Material)
+  const box2 = new THREE.Mesh(box2Geometry, box2MultiMaterial)
+  // box2.material.map = textureLoader.load(backgroundImage)
+  scene.add(box2)
+  box2.position.set(-10, 5, -10)
+
+  // scene.background = textureLoader.load('img/background.jpeg')
 
   const gui = new dat.GUI();
 
@@ -131,7 +166,7 @@ export default (container) => {
   gui.add(options, 'spotLightPenumbra', 0, 1)
   gui.add(options, 'spotLightIntensity', 0, 1)
 
-  // gui.hide()
+  gui.hide()
 
   let step = 0;
 
