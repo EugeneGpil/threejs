@@ -29,7 +29,7 @@ export default (container) => {
   // camera.position.z = 5;
   // camera.position.y = 2;
   // camera.position.x = 2;
-  camera.position.set(-10, 10, 10);
+  camera.position.set(11, 10, 10);
   orbit.update();
 
   const boxGeometry = new THREE.BoxGeometry();
@@ -71,46 +71,80 @@ export default (container) => {
   sphere.position.y = 7;
   sphere.position.z = 2;
 
-
   const ambientLight = new THREE.AmbientLight(0x333333);
   scene.add(ambientLight);
 
-  const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1);
-  directionalLight.position.set(-30, 50, 0)
-  directionalLight.castShadow = true;
-  directionalLight.shadow.camera.bottom = -20
-  directionalLight.shadow.camera.left = -20
-  directionalLight.shadow.camera.right = 20
-  directionalLight.shadow.camera.top = 20
-  scene.add(directionalLight)
+  // const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1);
+  // directionalLight.position.set(-30, 50, 0)
+  // directionalLight.castShadow = true;
+  // directionalLight.shadow.camera.bottom = -20
+  // directionalLight.shadow.camera.left = -20
+  // directionalLight.shadow.camera.right = 20
+  // directionalLight.shadow.camera.top = 20
+  // scene.add(directionalLight)
+  //
+  // const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
+  // scene.add(directionalLightHelper)
+  //
+  // const directionalLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
+  // scene.add(directionalLightShadowHelper)
 
-  const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
-  scene.add(directionalLightHelper)
+  const spotLight = new THREE.SpotLight(0xFFFFFF, 1);
+  spotLight.position.set(5, 5, 0)
+  spotLight.castShadow = true;
+  scene.add(spotLight)
 
-  const directionalLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
-  scene.add(directionalLightShadowHelper)
+  const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+  scene.add(spotLightHelper)
+
+  // scene.fog = new THREE.Fog(0xFFFFFF, 0, 200)
+  // scene.fog = new THREE.FogExp2(0xFFFFFF, 0.01)
+
+  // renderer.setClearColor(0xFFEA00);
+
+  const textureLoader = new THREE.TextureLoader();
+
+  scene.background = textureLoader.load('img/background.jpeg')
 
   const gui = new dat.GUI();
 
   const options = {
-    sphereColor: "#ffee00",
-    wireframe: false,
+    // sphereColor: "#ffee00",
+    // wireframe: false,
     speed: 0.01,
+    spotLightAngle: 0.6,
+    spotLightPenumbra: 0,
+    spotLightIntensity: 1,
   };
 
-  gui.addColor(options, "sphereColor").onChange((e) => {
-    sphere.material.color.set(e);
-  });
+  // gui.addColor(options, "sphereColor").onChange((e) => {
+  //   sphere.material.color.set(e);
+  // });
+  //
+  // gui.add(options, "wireframe").onChange((e) => {
+  //   sphere.material.wireframe = e;
+  // });
+  //
+  // gui.add(options, "speed", 0, 0.1)
 
-  gui.add(options, "wireframe").onChange((e) => {
-    sphere.material.wireframe = e;
-  });
+  gui.add(options, "spotLightAngle", 0, 1)
+  gui.add(options, 'spotLightPenumbra', 0, 1)
+  gui.add(options, 'spotLightIntensity', 0, 1)
 
-  gui.add(options, "speed", 0, 0.1)
+  // gui.hide()
 
   let step = 0;
 
+  spotLight.angle = options.spotLightAngle
+  spotLight.penumbra = options.spotLightPenumbra
+  spotLight.intensity = options.spotLightIntensity
+
   renderer.setAnimationLoop((time) => {
+    spotLight.angle = options.spotLightAngle
+    spotLight.penumbra = options.spotLightPenumbra
+    spotLight.intensity = options.spotLightIntensity
+    spotLightHelper.update()
+
     box.rotation.x = time / 2400;
     box.rotation.y = time / 2400;
 
