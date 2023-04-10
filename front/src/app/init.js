@@ -170,6 +170,17 @@ export default (container) => {
 
   let step = 0;
 
+  const mousePosition = new THREE.Vector2()
+
+  window.addEventListener('mousemove', function (e) {
+    mousePosition.x = 2 * e.clientX / window.innerWidth - 1;
+    mousePosition.y = - 2 * e.clientY / window.innerHeight + 1;
+  })
+
+  const rayCaster = new THREE.Raycaster();
+
+  const sphereId = sphere.id;
+
   spotLight.angle = options.spotLightAngle
   spotLight.penumbra = options.spotLightPenumbra
   spotLight.intensity = options.spotLightIntensity
@@ -185,6 +196,23 @@ export default (container) => {
 
     step += options.speed;
     sphere.position.y = 10 * Math.abs(Math.sin(step)) + 2
+
+    rayCaster.setFromCamera(mousePosition, camera);
+    const intersects = rayCaster.intersectObjects(scene.children);
+    // console.log(intersects)
+
+    const firstIntersect = intersects[0]
+    if (firstIntersect?.object.id === sphereId) {
+      sphere.material.color.set(0xFF0000)
+    } else {
+      sphere.material.color.set(0x00FF00)
+    }
+
+    for(let intersect of intersects) {
+      if (intersect.object.id === sphereId) {
+        // console.log('SPHERE')
+      }
+    }
 
     renderer.render(scene, camera);
   });
