@@ -56,9 +56,9 @@ export default (container) => {
   //   wireframe: false,
   // });
   const sphereMaterial = new THREE.MeshStandardMaterial({
-    color: 0x0000FF,
+    color: 0x0000ff,
     wireframe: false,
-  })
+  });
   // const sphereMaterial = new THREE.MeshLambertMaterial({
   //   color: 0x0000FF,
   //   wireframe: false,
@@ -89,21 +89,20 @@ export default (container) => {
   // const directionalLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
   // scene.add(directionalLightShadowHelper)
 
-  const spotLight = new THREE.SpotLight(0xFFFFFF, 1);
-  spotLight.position.set(5, 5, 0)
+  const spotLight = new THREE.SpotLight(0xffffff, 1);
+  spotLight.position.set(5, 5, 0);
   spotLight.castShadow = true;
-  scene.add(spotLight)
+  scene.add(spotLight);
 
   const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-  scene.add(spotLightHelper)
+  scene.add(spotLightHelper);
 
   // scene.fog = new THREE.Fog(0xFFFFFF, 0, 200)
   // scene.fog = new THREE.FogExp2(0xFFFFFF, 0.01)
 
   // renderer.setClearColor(0xFFEA00);
 
-  const backgroundImage = 'img/background.jpeg';
-
+  const backgroundImage = "img/background.jpeg";
 
   const cubeTextureLoader = new THREE.CubeTextureLoader();
   scene.background = cubeTextureLoader.load([
@@ -113,31 +112,30 @@ export default (container) => {
     backgroundImage,
     backgroundImage,
     backgroundImage,
-  ])
-
+  ]);
 
   const textureLoader = new THREE.TextureLoader();
 
-  const box2Geometry = new THREE.BoxGeometry(4, 4, 4)
+  const box2Geometry = new THREE.BoxGeometry(4, 4, 4);
   const box2Material = new THREE.MeshBasicMaterial({
     // color: 0x00FF00,
     // map: textureLoader.load(backgroundImage)
-  })
+  });
 
   const box2MultiMaterial = [
-    new THREE.MeshBasicMaterial({map: textureLoader.load(backgroundImage)}),
-    new THREE.MeshBasicMaterial({map: textureLoader.load(backgroundImage)}),
-    new THREE.MeshBasicMaterial({map: textureLoader.load(backgroundImage)}),
-    new THREE.MeshBasicMaterial({map: textureLoader.load(backgroundImage)}),
-    new THREE.MeshBasicMaterial({map: textureLoader.load(backgroundImage)}),
-    new THREE.MeshBasicMaterial({map: textureLoader.load(backgroundImage)}),
+    new THREE.MeshBasicMaterial({ map: textureLoader.load(backgroundImage) }),
+    new THREE.MeshBasicMaterial({ map: textureLoader.load(backgroundImage) }),
+    new THREE.MeshBasicMaterial({ map: textureLoader.load(backgroundImage) }),
+    new THREE.MeshBasicMaterial({ map: textureLoader.load(backgroundImage) }),
+    new THREE.MeshBasicMaterial({ map: textureLoader.load(backgroundImage) }),
+    new THREE.MeshBasicMaterial({ map: textureLoader.load(backgroundImage) }),
   ];
 
   // const box2 = new THREE.Mesh(box2Geometry, box2Material)
-  const box2 = new THREE.Mesh(box2Geometry, box2MultiMaterial)
+  const box2 = new THREE.Mesh(box2Geometry, box2MultiMaterial);
   // box2.material.map = textureLoader.load(backgroundImage)
-  scene.add(box2)
-  box2.position.set(-10, 5, -10)
+  scene.add(box2);
+  box2.position.set(-10, 5, -10);
 
   // scene.background = textureLoader.load('img/background.jpeg')
 
@@ -162,56 +160,113 @@ export default (container) => {
   //
   // gui.add(options, "speed", 0, 0.1)
 
-  gui.add(options, "spotLightAngle", 0, 1)
-  gui.add(options, 'spotLightPenumbra', 0, 1)
-  gui.add(options, 'spotLightIntensity', 0, 1)
+  gui.add(options, "spotLightAngle", 0, 1);
+  gui.add(options, "spotLightPenumbra", 0, 1);
+  gui.add(options, "spotLightIntensity", 0, 1);
 
-  gui.hide()
+  gui.hide();
 
   let step = 0;
 
-  const mousePosition = new THREE.Vector2()
+  const mousePosition = new THREE.Vector2();
 
-  window.addEventListener('mousemove', function (e) {
-    mousePosition.x = 2 * e.clientX / window.innerWidth - 1;
-    mousePosition.y = - 2 * e.clientY / window.innerHeight + 1;
-  })
+  window.addEventListener("mousemove", function (e) {
+    mousePosition.x = (2 * e.clientX) / window.innerWidth - 1;
+    mousePosition.y = (-2 * e.clientY) / window.innerHeight + 1;
+  });
 
   const rayCaster = new THREE.Raycaster();
 
   const sphereId = sphere.id;
 
-  spotLight.angle = options.spotLightAngle
-  spotLight.penumbra = options.spotLightPenumbra
-  spotLight.intensity = options.spotLightIntensity
+  const plane2Geometry = new THREE.PlaneGeometry(10, 10, 10, 10);
+  const plane2Material = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    wireframe: true,
+  });
+  const plane2 = new THREE.Mesh(plane2Geometry, plane2Material);
+  scene.add(plane2);
+  plane2.position.set(10, 10, 15);
 
+  plane2.geometry.attributes.position.array[0] -= 10 * Math.random();
+  plane2.geometry.attributes.position.array[1] -= 10 * Math.random();
+  plane2.geometry.attributes.position.array[2] -= 10 * Math.random();
+  const lastElementNumber =
+    plane2.geometry.attributes.position.array.length - 1;
+  plane2.geometry.attributes.position.array[lastElementNumber] -=
+    10 * Math.random();
+  plane2.geometry.attributes.position.array[lastElementNumber - 1] -=
+    10 * Math.random();
+  plane2.geometry.attributes.position.array[lastElementNumber - 2] -=
+    10 * Math.random();
+
+  const sphere2Geometry = new THREE.SphereGeometry(4);
+  const vShader = `
+    void main() {
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+  const fShader = `
+    void main() {
+      gl_FragColor = vec4(0.5, 0.5, 1.0, 1.0);
+    }
+  `;
+  const sphere2Material = new THREE.ShaderMaterial({
+    vertexShader: vShader,
+    fragmentShader: fShader,
+  });
+  const sphere2 = new THREE.Mesh(sphere2Geometry, sphere2Material);
+  scene.add(sphere2);
+  sphere2.position.set(-5, 10, 10);
+
+  spotLight.angle = options.spotLightAngle;
+  spotLight.penumbra = options.spotLightPenumbra;
+  spotLight.intensity = options.spotLightIntensity;
+
+  let prevTime = 0;
   renderer.setAnimationLoop((time) => {
-    spotLight.angle = options.spotLightAngle
-    spotLight.penumbra = options.spotLightPenumbra
-    spotLight.intensity = options.spotLightIntensity
-    spotLightHelper.update()
+    spotLight.angle = options.spotLightAngle;
+    spotLight.penumbra = options.spotLightPenumbra;
+    spotLight.intensity = options.spotLightIntensity;
+    spotLightHelper.update();
 
     box.rotation.x = time / 2400;
     box.rotation.y = time / 2400;
 
     step += options.speed;
-    sphere.position.y = 10 * Math.abs(Math.sin(step)) + 2
+    sphere.position.y = 10 * Math.abs(Math.sin(step)) + 2;
 
     rayCaster.setFromCamera(mousePosition, camera);
     const intersects = rayCaster.intersectObjects(scene.children);
     // console.log(intersects)
 
-    const firstIntersect = intersects[0]
+    const firstIntersect = intersects[0];
     if (firstIntersect?.object.id === sphereId) {
-      sphere.material.color.set(0xFF0000)
+      sphere.material.color.set(0xff0000);
     } else {
-      sphere.material.color.set(0x00FF00)
+      sphere.material.color.set(0x00ff00);
     }
 
-    for(let intersect of intersects) {
+    for (let intersect of intersects) {
       if (intersect.object.id === sphereId) {
         // console.log('SPHERE')
       }
+    }
+
+    if (time - prevTime >= 1000) {
+      plane2.geometry.attributes.position.array[0] = 10 * Math.random();
+      plane2.geometry.attributes.position.array[1] = 10 * Math.random();
+      plane2.geometry.attributes.position.array[2] = 10 * Math.random();
+      const lastElementNumber =
+        plane2.geometry.attributes.position.array.length - 1;
+      plane2.geometry.attributes.position.array[lastElementNumber] =
+        10 * Math.random();
+      plane2.geometry.attributes.position.array[lastElementNumber - 1] =
+        10 * Math.random();
+      plane2.geometry.attributes.position.array[lastElementNumber - 2] =
+        10 * Math.random();
+      plane2.geometry.attributes.position.needsUpdate = true;
+      prevTime = time;
     }
 
     renderer.render(scene, camera);
