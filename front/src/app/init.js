@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls";
 import * as dat from "dat.gui";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader";
 
 export default (container) => {
   const renderer = new THREE.WebGLRenderer();
@@ -223,6 +224,24 @@ export default (container) => {
   spotLight.penumbra = options.spotLightPenumbra;
   spotLight.intensity = options.spotLightIntensity;
 
+  const assetLoader = new GLTFLoader();
+  const robotUrl = new URL(
+    "../assets/uploads_files_3061843_robotitus.glb",
+    import.meta.url
+  );
+  assetLoader.load(
+    robotUrl.href,
+    (gltf) => {
+      const model = gltf.scene;
+      scene.add(model);
+      model.position.set(-12, 4, 10);
+    },
+    undefined,
+    (error) => {
+      console.error(error);
+    }
+  );
+
   let prevTime = 0;
   renderer.setAnimationLoop((time) => {
     spotLight.angle = options.spotLightAngle;
@@ -273,4 +292,10 @@ export default (container) => {
   });
 
   renderer.render(scene, camera);
+
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
 };
